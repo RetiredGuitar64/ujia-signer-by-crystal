@@ -16,6 +16,7 @@ class Checker
   def initialize(@name : String = ACCOUNTS[0][:name], @token : String = ACCOUNTS[0][:token])
   end
 
+  # 主检查入口
   def run
     cookie = "SESSION=#{@token}"
 
@@ -32,8 +33,10 @@ class Checker
     # 创建signer签到器
     signer = Signer.new
 
+    # 主循环
     Log.info{"轮询已开始..."}
     loop do
+      # 拿到响应
       response = HTTP::Client.get(id_check_url, check_headers)
 
       if response.status_code == 200
@@ -41,19 +44,23 @@ class Checker
           Log.info{"探测到签到: #{courseSignInId}"}
           # 开始获取签到码
           code_check_url = "https://www.eduplus.net/api/course/clock_in/#{courseSignInId}/student" # codecheck的url
+          # 响应
           response_of_code_check = HTTP::Client.get(code_check_url, check_headers)
 
+          # 扫描签到码, 4位就是正常码，3位就是200, 即普通签到，
           codeDistance : String = detect_codeDistance(response_of_code_check)
           Log.info{"签到码: #{codeDistance}"}
 
-          # 进入签到流程
+          # 进入签到流程, 传入签到id和签到码,4位数字为密码签到，或200,为普通签到
           signer.run(courseSignInId, codeDistance)
 
         end
       else
+        # 状态码不为200, 说明有问题
         Log.error{"状态码: #{response.status_code}, \"#{@name}\" 的token \"#{@token}\" 可能已失效"}
       end
 
+      # 间隔几秒
       sleep SLEEP_GAP_IN_LOOP
     end
   end
@@ -67,8 +74,9 @@ class Checker
     nil # 未匹配到签到id字段，就返回nil
   end
 
+  # 检测签到码的方法
   def detect_codeDistance(response : HTTP::Client::Response) : String
-    if match = CODE_DISTANCE_RE.match(response.body)
+    if match = CODE_DISTANCE_RE.match(response.body)  # 匹配签到码字段
       return match[1]
     else
       Log.warn{"未匹配到签到码字段，未知错误，将默认以普通签到进行"}
