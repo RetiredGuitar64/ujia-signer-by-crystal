@@ -63,7 +63,7 @@ class Checker
       end
 
       # 间隔几秒
-      sleep SLEEP_GAP_IN_LOOP
+      sleep SLEEP_GAP_IN_LOOP.seconds
     end
   end
 

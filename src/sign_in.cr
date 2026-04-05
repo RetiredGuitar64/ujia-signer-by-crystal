@@ -7,6 +7,9 @@ require "./accounts.cr"
 # 到了这个剩余秒数，就要开始签到
 DEADLINE = 15
 
+# 完成一轮签到后，休眠秒数
+SLEEP_AFTER_A_ROUND = 20
+
 class Signer
   def initialize()
     # 提前初始化学生列表, 提高开始签到后的速度
@@ -27,7 +30,7 @@ class Signer
       # 则签到url为空
       codeStringUrl = nil
       # 直接进行签到post
-      sleep 1
+      sleep 1.seconds
       @students.each do |student|
         student.post(courseSignInId, codeStringUrl)
       end
@@ -62,7 +65,7 @@ class Signer
           break if remaining_seconds == 0
 
           # 一秒拉取一回剩余时间
-          sleep 1
+          sleep 1.seconds
         end
 
       # 确保完成签到
@@ -75,8 +78,9 @@ class Signer
       end
 
     end
-    Log.info{"本次签到完毕"}
-    Log.info{"轮询重新开始..."}
+    Log.info{"本次签到完毕，休眠 #{SLEEP_AFTER_A_ROUND} 秒"}
+    sleep SLEEP_AFTER_A_ROUND.seconds
     Log.info{"------------------------------"}
+    Log.info{"轮询重新开始..."}
   end
 end
