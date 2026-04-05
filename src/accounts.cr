@@ -1,3 +1,3 @@
 ACCOUNTS = [
-  ["test","ZGExYjVjNWMtYmFlYi00NWRhLTk0MjAtMmJlMzRiZGMwNGM2"]
+  {:name => "test", :token => "ZGExYjVjNWMtYmFlYi00NWRhLTk0MjAtMmJlMzRiZGMwNGM2"}
 ]

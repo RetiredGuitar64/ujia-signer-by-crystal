@@ -1,7 +1,9 @@
-require "./accounts.cr"
 require "http/client"
 require "json"
 require "log"
+
+require "./accounts.cr"
+require "./sign_in.cr"
 
 SLEEP_GAP_IN_LOOP = 2
 # 签到id正则
@@ -11,7 +13,7 @@ CODE_DISTANCE_RE = /"codeDistance"\s*:\s*"(\d{3,4})"/
 class Checker
   getter name, token
 
-  def initialize(@name : String = ACCOUNTS[0][0], @token : String = ACCOUNTS[0][1])
+  def initialize(@name : String = ACCOUNTS[0][:name], @token : String = ACCOUNTS[0][:token])
   end
 
   def run
@@ -27,20 +29,25 @@ class Checker
       "connection"     => "Keep-Alive",
     }
 
+    # 创建signer签到器
+    signer = Signer.new
+
     Log.info{"轮询已开始..."}
     loop do
       response = HTTP::Client.get(id_check_url, check_headers)
 
       if response.status_code == 200
-        if courseSignInId = detect_courseSignInId(response)
+        if courseSignInId = detect_courseSignInId(response) # 尝试抓取签到id
           Log.info{"探测到签到: #{courseSignInId}"}
           # 开始获取签到码
           code_check_url = "https://www.eduplus.net/api/course/clock_in/#{courseSignInId}/student" # codecheck的url
           response_of_code_check = HTTP::Client.get(code_check_url, check_headers)
+
           codeDistance = detect_codeDistance(response_of_code_check)
+          Log.info{"签到码: #{codeDistance}"}
 
           # 进入签到流程
-          # puts codeDistance
+          signer.run
 
         end
       else
