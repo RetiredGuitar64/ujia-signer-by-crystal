@@ -1,5 +1,4 @@
 require "http/client"
-require "json"
 require "log"
 
 require "./accounts.cr"
