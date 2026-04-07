@@ -4,7 +4,7 @@ require "./create_student.cr"
 require "./accounts.cr"
 
 # 到了这个剩余秒数，就要开始签到
-DEADLINE = 12
+DEADLINE = 10
 
 # 完成一轮签到后，休眠秒数
 SLEEP_AFTER_A_ROUND = 60

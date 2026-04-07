@@ -2,7 +2,7 @@ require "http/server"
 require "log"
 
 BIND_ADDRESS = "0.0.0.0"
-BIND_PORT = 28888
+BIND_PORT = 18888
 
 class Web
   def initialize(@status : Status)
@@ -31,7 +31,7 @@ class Web
     spawn do
       web.listen
     end
-    Log.info{"Web 已启动"}
+    Log.info{"Web 已启动 #{BIND_ADDRESS}:#{BIND_PORT}"}
 
   end
 end
