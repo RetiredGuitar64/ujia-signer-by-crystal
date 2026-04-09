@@ -1,7 +1,7 @@
 require "http/client"
 require "log"
 
-require "./accounts.cr"
+require "./accounts_reader.cr"
 require "./sign_in.cr"
 
 # check循环的间隔
@@ -15,10 +15,10 @@ class Checker
   @name : String
   @token : String
 
-  def initialize(@status : Status)
+  def initialize(@status : Status, @accounts : Array({name: String, token: String}) )
     # 默认取第一个学生的token为检查token
-    @name = ACCOUNTS[0][:name]
-    @token = ACCOUNTS[0][:token]
+    @name = @accounts[0][:name]
+    @token = @accounts[0][:token]
   end
 
   # 主检查入口
@@ -36,7 +36,7 @@ class Checker
     }
 
     # 创建signer签到器
-    signer = Signer.new
+    signer = Signer.new(@accounts)
 
     # 主循环
     Log.info{"轮询已开始..."}

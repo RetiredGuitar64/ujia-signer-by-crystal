@@ -1,7 +1,7 @@
 require "http/client"
 require "log"
 require "./create_student.cr"
-require "./accounts.cr"
+require "./accounts_reader.cr"
 
 # 到了这个剩余秒数，就要开始签到
 DEADLINE = 10
@@ -10,12 +10,12 @@ DEADLINE = 10
 SLEEP_AFTER_A_ROUND = 60
 
 class Signer
-  def initialize()
+  def initialize(@accounts : Array({name: String, token: String}) ) # 期待传入学生数组，
     # 提前初始化学生列表, 提高开始签到后的速度
     @students = [] of Student  # 每一个学生对象都存在这个数组里
 
     # 初始化学生列表
-    ACCOUNTS.each do |account|
+    @accounts.each do |account|
       student = Student.new(account)
       @students << student
     end

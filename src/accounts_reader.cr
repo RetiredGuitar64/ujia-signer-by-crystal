@@ -12,7 +12,7 @@ class AccountsReader
   end
 
   # 读取账号方法
-  def read_accounts(path : String = "./accounts.txt") # 默认文件为同目录下的 accounts.txt
+  def read_accounts(path : String = "./accounts.txt") : Array({name: String, token: String}) # 默认文件为同目录下的 accounts.txt
     # 清理账号残留（若有
     @accounts.clear
 
@@ -76,5 +76,8 @@ class AccountsReader
     Log.info{"--------------------"}
     Log.info{"请确认账号是否缺失"}
     Log.info{"--------------------"}
+
+    # read方法返回@accounts实例变量
+    @accounts
   end
 end

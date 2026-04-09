@@ -12,7 +12,7 @@ class Student
   @token : String
   @post_url : String
 
-  def initialize(account : Hash)
+  def initialize(account : {name: String, token: String}) # 期望传入单个学生的NamedTuple
     # 初始化单个学生的名字，token,
     @name = account[:name]
     @token = account[:token]
