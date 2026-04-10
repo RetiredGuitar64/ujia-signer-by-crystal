@@ -1,25 +1,34 @@
 require "log"
 require "http/client"
 
+# 匹配公钥
 ENCRYPTION_KEY_RE = /"encryptionKey"\s*:\s*"([^"]+)"/
+
+# 匹配token
 ACCESS_TOKEN_RE = /"accessToken"\s*:\s*"([A-Za-z0-9\-]{48})"/
 
 class AuthSaver
   def initialize
   end
 
+  # 使用的时候，直接用这个
   def auth_with_password(phone : String, password : String) : String
+    # 获取公钥
     public_key = get_public_key_with_password_login()
 
+    # 加密
     cryptogram = encode(public_key, phone, password)
 
+    # 获取token
     token = get_token_with_password_login(public_key, cryptogram)
 
+    # 检查token可用性
     return "!! token 不可用!! : #{token}" if checkup_if_token_is_avaliable(token) == false
 
     return token
   end
 
+  # 验证码登录，未实现
   def auth_with_captcha(phone : String) : String
   end
 
@@ -34,7 +43,9 @@ class AuthSaver
     }
     post_body = %({"mode":"Password","loginAndRegister":true})
 
+    # 拿响应
     response = HTTP::Client.post(post_url, headers: post_headers, body: post_body)
+    # 匹配公钥字段
     if match = ENCRYPTION_KEY_RE.match(response.body)
       Log.info{"申请到公钥: #{match[1]}"}
       return match[1]
@@ -48,13 +59,18 @@ class AuthSaver
   def encode(public_key : String, phone : String, password : String) : String
     Log.info{"开始加密..."}
     begin
+      # 开临时文件，
       temp_script = File.tempfile("ujia_encode_script_tempfile.mjs")
+      # 将加密脚本放入
       temp_script << puts_script
+      # 确保文件落盘
       temp_script.flush
 
+      # 申请内存，记录输出
       stdout_io = IO::Memory.new
       stderr_io = IO::Memory.new
 
+      # 开一个新的进程运行node, 加密流程
       status = Process.run(
         "node",
         args: [temp_script.path, "--public-key", public_key, "--identifier", phone, "--password", password, "--only-cryptogram"],
@@ -62,15 +78,18 @@ class AuthSaver
         error: stderr_io,
       )
 
+      # 加密失败，报错
       unless status.success?
         Log.error{"!! 加密失败 !! exitCode = #{status.exit_code}, stderr = #{stderr_io.to_s}"}
       end
 
+      # 密文，去除空格
       cryptogram = stdout_io.to_s.strip
       Log.info{"加密完成：cryptogram: #{cryptogram}"}
 
       return cryptogram
     ensure
+      # 确保临时文件删除
       if temp_script
         path = temp_script.path
         temp_script.close
@@ -92,8 +111,10 @@ class AuthSaver
     }
     post_body = %({"mode":"Password","encryptionKey":"#{public_key}","cryptogram":"#{cryptogram}"})
 
+    # 拿响应
     response = HTTP::Client.post(post_url, headers: post_headers, body: post_body)
 
+    # 匹配token字段
     if match = ACCESS_TOKEN_RE.match(response.body)
       Log.info{"获得token: #{match[1]}"}
       return match[1]
@@ -131,6 +152,7 @@ class AuthSaver
     end
   end
 
+  # 脚本内容，放在最后位置，后面没有别的方法了
   def puts_script
     <<-HEREDOC
     import { readFile } from "node:fs/promises";
