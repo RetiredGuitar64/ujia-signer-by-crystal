@@ -2,7 +2,7 @@ require "http/client"
 require "log"
 
 require "./accounts_reader.cr"
-require "./sign_in.cr"
+require "./signer.cr"
 
 # check循环的间隔
 SLEEP_GAP_IN_LOOP = 2
