@@ -93,9 +93,12 @@ class Signer
     Log.info{"轮询重新开始..."}
   end
 
+  # 签到方法单独拉出来，并发终于实现了！！！
   def start_post(courseSignInId : String, codeStringUrl : (String | Nil))
+    # 启动waitgroup, 确保所有学生都签到完成再进行下一步
     WaitGroup.wait do |wg|
       @students.each do |student|
+        # 所有学生挨个单独spawn一个fiber, 进行post
         wg.spawn do
           begin
             student.post(courseSignInId, codeStringUrl)
