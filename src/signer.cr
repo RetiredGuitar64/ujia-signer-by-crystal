@@ -1,5 +1,6 @@
 require "http/client"
 require "log"
+require "wait_group"
 require "./create_student.cr"
 require "./accounts_reader.cr"
 
@@ -32,14 +33,14 @@ class Signer
 
       begin
         sleep 1.seconds
-        @students.each do |student|
-          student.post(courseSignInId, codeStringUrl)
-        end
+
+        start_post(courseSignInId, codeStringUrl)
+
       ensure
         Log.info{"二次签到开始"}
-        @students.each do |student|
-          student.post(courseSignInId, codeStringUrl)
-        end
+
+        start_post(courseSignInId, codeStringUrl)
+
         Log.info{"二次签到完成"}
       end
     else
@@ -62,9 +63,9 @@ class Signer
 
           # 小于指定时间，开始签到
           if remaining_seconds <= DEADLINE && remaining_seconds > 0
-            @students.each do |student|
-              student.post(courseSignInId, codeStringUrl)
-            end
+
+            start_post(courseSignInId, codeStringUrl)
+
             #签完到，退出
             break
           end
@@ -79,9 +80,9 @@ class Signer
       # 确保完成签到
       ensure
         Log.info{"二次签到开始"}
-        @students.each do |student|
-          student.post(courseSignInId, codeStringUrl)
-        end
+
+        start_post(courseSignInId, codeStringUrl)
+
         Log.info{"二次签到完成"}
       end
 
@@ -90,5 +91,22 @@ class Signer
     sleep SLEEP_AFTER_A_ROUND.seconds
     Log.info{"------------------------------"}
     Log.info{"轮询重新开始..."}
+  end
+
+  # 签到方法单独拉出来，并发终于实现了！！！
+  def start_post(courseSignInId : String, codeStringUrl : (String | Nil))
+    # 启动waitgroup, 确保所有学生都签到完成再进行下一步
+    WaitGroup.wait do |wg|
+      @students.each do |student|
+        # 所有学生挨个单独spawn一个fiber, 进行post
+        wg.spawn do
+          begin
+            student.post(courseSignInId, codeStringUrl)
+          rescue ex
+            Log.error{"!! 签到异常: #{student.name}, #{ex.class}: #{ex.message} !!"}
+          end
+        end
+      end
+    end
   end
 end
