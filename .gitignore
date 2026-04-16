@@ -5,3 +5,4 @@
 *.dwarf
 deploy.sh
 accounts.txt
+/rsa/
