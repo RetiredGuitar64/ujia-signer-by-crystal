@@ -1023,6 +1023,3 @@ class AuthSaver
     HEREDOC
   end
 end
-
-# a = AuthSaver.new
-# pp a.get_public_key_with_password_login()
