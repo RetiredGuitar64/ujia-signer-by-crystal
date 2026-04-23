@@ -12,6 +12,7 @@ COURSE_SIGN_IN_ID_RE = /"courseSignInId"\s*:\s*"([0-9a-f]{32})"/
 CODE_DISTANCE_RE = /"codeDistance"\s*:\s*"(\d{3,4})"/
 
 class Checker
+  # 这两个实例变量，是checker自己用的，用来检查是否有签到，默认初始化第一个学生
   @name : String
   @token : String
 
