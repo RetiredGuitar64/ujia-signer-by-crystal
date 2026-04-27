@@ -71,3 +71,24 @@
 ## Contributors
 
 - [RetiredGuitar64](https://github.com/RetiredGuitar64) - creator and maintainer
+
+## License / 授权协议
+
+本项目采用 **PolyForm Noncommercial License 1.0.0** 授权。
+
+你可以在非商业目的下使用、学习、研究、测试、修改和分发本项目。
+
+未经作者明确书面许可，任何个人或组织不得将本项目、本项目的修改版本或基于本项目的衍生作品用于商业用途，包括但不限于：
+
+- 收费提供服务；
+- 商业化部署；
+- 销售、出租、收费部署或商业分发，无论是否开源；
+- 作为商业产品的一部分；
+- 用于盈利性组织的业务场景；
+- 以本项目为基础进行二次包装、推广或销售。
+
+如需商业授权、合作、定制开发或其他许可，请联系作者。
+
+License: PolyForm Noncommercial License 1.0.0
+
+Required Notice: Copyright (c) 2026 RetiredGuitar64. All rights reserved.

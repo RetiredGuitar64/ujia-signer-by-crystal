@@ -9,5 +9,3 @@ targets:
     main: src/main.cr
 
 crystal: '>= 1.19.1'
-
-license: MIT
