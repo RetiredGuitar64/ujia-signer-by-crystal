@@ -24,21 +24,22 @@
    ```bash
    git clone https://github.com/RetiredGuitar64/ujia-signer-by-crystal.git
    ```
-2. 获取账号token
-   运行命令：
+2. 编译可执行文件
    ```bash
-   crystal run temp_auth.cr
+   shards build --release
+   ```
+   可执行文件会输出至项目目录的`bin`文件夹中
+3. 获取账号token
+   运行程序，并加入`-u`参数：
+   ```bash
+   ./bin/ujiacrystal -u
    ```
    按照提示输入手机号和密码，等待token获取
      
    > 这一步只要能获取到token就可以
 
    token应当为48位字符，并且请确认token校验通过后再使用
-3. 编译可执行文件
-   ```bash
-   shards build --release
-   ```
-   可执行文件会输出至项目目录的`bin`文件夹中
+
 4. 将可执行文件移动至想要运行的机器，可以是公网服务器或linux本机
 5. 创建账号配置文件（必须）
    在可执行文件的同目录下，创建文件 `accounts.txt`
@@ -54,14 +55,14 @@
    Bob | XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
    ```
    - 支持写入多个账号，但是需要是同一个班级
-6. 直接`./可执行文件`运行主程序
+6. 直接`./ujiacrystal`运行主程序
 
 #### 注意
 > 不使用的时候不要让程序一直跑，放假了就关掉，避免服务端监测到流量异常  
 
 > 默认会秒杀普通学习，密码学习默认会在剩下10s的时候开始学习  
 
-> 批量学习默认开启
+> 批量学习默认开启，可以直接批量添加账号
 
 #### Web 显示学习状态
 - 默认端口`18888`，直接访问 `your_ip:18888` 即可实时查看学习状态
