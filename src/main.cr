@@ -17,6 +17,9 @@ end
 
 # -u 认证并获取token
 if auth_mode
+  puts "开始密码认证"
+  sleep 1.seconds
+
   auth = AuthSaver.new
   puts "请输入手机号: "
   phone : String = gets || ""
@@ -40,6 +43,8 @@ if auth_mode
   exit
 end
 
+# 启动主程序
+#
 # 读取账号
 accounts_reader = AccountsReader.new
 accounts = accounts_reader.read_accounts
