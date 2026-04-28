@@ -1,7 +1,16 @@
+require "option_parser"
+
 require "./checker.cr"
 require "./web.cr"
 require "./status.cr"
 require "./accounts_reader.cr"
+
+auth_mode : Bool = false
+
+OptionParser.parse do |parser|
+  parser.banner = "Usage: ujiacrystal [arguments]"
+  parser.on("-t", "-get-token", "Get your account's token"){ auth_mode = true }
+end
 
 # 读取账号
 accounts_reader = AccountsReader.new
