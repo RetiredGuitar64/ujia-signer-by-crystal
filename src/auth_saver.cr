@@ -25,7 +25,7 @@ class AuthSaver
     token = get_token_with_password_login(public_key, cryptogram)
 
     # 检查token可用性
-    return "!! token 不可用!! : #{token}" if checkup_if_token_is_avaliable(token) == false
+    return "!! token 不可用!! : #{token}" if checkup_if_token_is_available(token) == false
 
     return token
   end
@@ -126,7 +126,7 @@ class AuthSaver
     end
   end
 
-  private def checkup_if_token_is_avaliable(token : String) : Bool
+  private def checkup_if_token_is_available(token : String) : Bool
     Log.info{"检查token可用性"}
 
     cookie = "SESSION=#{token}"
@@ -145,7 +145,7 @@ class AuthSaver
     response = HTTP::Client.get(id_check_url, check_headers)
 
     # 状态码判断, 以及课程状态判断，避免状态码200但课程data为空
-    if response.status_code == 200 && JsonHandler.token_avaliable?(response.body)
+    if response.status_code == 200 && JsonHandler.token_available?(response.body)
       Log.info{"检查完毕：token可用"}
       return true
     else

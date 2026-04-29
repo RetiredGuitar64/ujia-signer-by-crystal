@@ -34,7 +34,7 @@ class Checker
     }
 
     # 检查所有账号是否可用
-    check_all_accounts_token_avaliable()
+    check_all_accounts_token_available()
 
     # 创建signer签到器
     signer = Signer.new(@accounts)
@@ -47,7 +47,7 @@ class Checker
         response = HTTP::Client.get(id_check_url, check_headers)
 
         # 检查账号状态是否正常
-        if response.status_code == 200 && JsonHandler.token_avaliable?(response.body)
+        if response.status_code == 200 && JsonHandler.token_available?(response.body)
           # 检查是否有签到
           if courseSignInId : (String | Nil) = JsonHandler.catch_courseSignInId(response.body) # 尝试抓取签到id
             Log.info{"探测到签到: #{courseSignInId}"}
@@ -85,7 +85,7 @@ class Checker
     end
   end
 
-  private def check_all_accounts_token_avaliable
+  private def check_all_accounts_token_available
     Log.info{"--------------------"}
     Log.info{"开始检查: 账号是否全部可用?"}
 
@@ -109,7 +109,7 @@ class Checker
       response = HTTP::Client.get(id_check_url, check_headers)
 
       # 状态码判断, 以及课程是否存在判断, 避免状态码200但无课程data
-      if response.status_code == 200 && JsonHandler.token_avaliable?(response.body)
+      if response.status_code == 200 && JsonHandler.token_available?(response.body)
         Log.info{"账号: #{name}, token可用"}
       else
         Log.error{"!! 账号#{name} token失效 !! #{token} 状态码: #{response.status_code} \n 响应体: \n#{response.body}\n"}

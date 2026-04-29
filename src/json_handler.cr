@@ -3,7 +3,7 @@ require "json"
 class JsonHandler
 
   # 检查token是否可用：即检查data[]是否为空，以及data中的课程是否有courseSignInOpen字段
-  def self.token_avaliable?(body : String) : Bool
+  def self.token_available?(body : String) : Bool
     json = JSON.parse(body)
 
     # 课程数组
