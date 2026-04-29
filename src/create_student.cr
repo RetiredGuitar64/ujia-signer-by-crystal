@@ -1,8 +1,6 @@
 require "http/client"
 require "log"
 
-# 剩余时间字段匹配的正则
-REMAINING_TIME_RE = /"remainingTime"\s*:\s*(\d+)/
 # 查看签到是否成功
 SUCCESS_RE = /"success"\s*:\s*(true|false)/
 
@@ -55,17 +53,19 @@ class Student
     end
   end
 
-  # 获取剩余秒数，
+  # 获取剩余秒数
   def get_remaining_seconds(courseSignInId : String, codeStringUrl : String) : Int32 # 普通签到不需要获取秒数，需要获取秒数就肯定是密码签到，所以密码不能nil, 然后返回一个int32的秒数
     response = HTTP::Client.get("https://www.eduplus.net/api/course/clock_in/#{courseSignInId}/student", @sign_in_headers)
 
-    # 匹配剩余时间字段
-    if match = REMAINING_TIME_RE.match(response.body)
-      # 返回剩余秒数
-      return match[1].to_i
+    # 抓取剩余时间
+    remainingTime = JsonHandler.catch_remaining_seconds(response.body)
+
+    if remainingTime != 0
+      # 不为零，直接返回剩余时间
+      return remainingTime
     else
-      Log.warn{"密码签到: #{codeStringUrl.split('=')[1]} 无法获取剩余时间,请手动签到"}
-      # 无法获取，就返回剩余时间为0
+      # 无法获取，就返回剩余时间为0, 即立即签到
+      Log.warn{"密码签到: #{codeStringUrl.split('=')[1]} 无法获取剩余时间,已立即签到"}
       return 0
     end
   end
