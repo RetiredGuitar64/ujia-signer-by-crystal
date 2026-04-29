@@ -79,4 +79,19 @@ class JsonHandler
       return false
     end
   end
+
+  # 抓取公钥
+  def self.catch_public_key(body : String) : (String | Nil)
+    json = JSON.parse(body)
+
+    if data = json["data"]?
+      if public_key = data["encryptionKey"]?
+        return public_key.as_s
+      else
+        return nil
+      end
+    else
+      return nil
+    end
+  end
 end
