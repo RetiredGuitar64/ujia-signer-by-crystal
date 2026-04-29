@@ -1,6 +1,8 @@
 require "log"
 require "http/client"
 
+require "./json_handler.cr"
+
 # 匹配公钥
 ENCRYPTION_KEY_RE = /"encryptionKey"\s*:\s*"([^"]+)"/
 
@@ -142,12 +144,12 @@ class AuthSaver
     # 拿到响应
     response = HTTP::Client.get(id_check_url, check_headers)
 
-    # 状态码判断
-    if response.status_code == 200
+    # 状态码判断, 以及课程状态判断，避免状态码200但课程data为空
+    if response.status_code == 200 && JsonHandler.token_avaliable?(response.body)
       Log.info{"检查完毕：token可用"}
       return true
     else
-      Log.error{"!! token不可用 !! #{token} 响应体: #{response.body}"}
+      Log.error{"!! token不可用 !! #{token} \n响应体: \n#{response.body}\n"}
       return false
     end
   end
