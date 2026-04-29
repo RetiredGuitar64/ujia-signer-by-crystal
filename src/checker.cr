@@ -3,6 +3,7 @@ require "log"
 
 require "./accounts_reader.cr"
 require "./signer.cr"
+require "./json_handler.cr"
 
 # check循环的间隔
 SLEEP_GAP_IN_LOOP = 2
@@ -10,8 +11,6 @@ SLEEP_GAP_IN_LOOP = 2
 COURSE_SIGN_IN_ID_RE = /"courseSignInId"\s*:\s*"([0-9a-f]{32})"/
 # 签到码字段正则
 CODE_DISTANCE_RE = /"codeDistance"\s*:\s*"(\d{3,4})"/
-# 紧急补丁，防止token状态码200但不返回课程
-COURSE_ID_RE = /"courseId"\s*:/
 
 class Checker
   # 这两个实例变量，是checker自己用的，用来检查是否有签到，默认初始化第一个学生
@@ -51,7 +50,7 @@ class Checker
         # 拿到响应
         response = HTTP::Client.get(id_check_url, check_headers)
 
-        if response.status_code == 200 && COURSE_ID_RE.match(response.body)
+        if response.status_code == 200 && JsonHandler.token_avaliable?(response.body)
           if courseSignInId : (String | Nil) = detect_courseSignInId(response) # 尝试抓取签到id
             Log.info{"探测到签到: #{courseSignInId}"}
             # 开始获取签到码
@@ -73,7 +72,7 @@ class Checker
           end
         else
           # 状态码不为200, 说明有问题
-          Log.error{"状态码: #{response.status_code}, \"#{@name}\" 的token \"#{@token}\" 可能已失效"}
+          Log.error{"状态码: #{response.status_code}, \"#{@name}\" 的token \"#{@token}\" 可能已失效\n响应体：\n#{response.body}\n"}
           # web显示Error
           @status.display_404_status
         end
@@ -130,11 +129,11 @@ class Checker
       # 拿到响应
       response = HTTP::Client.get(id_check_url, check_headers)
 
-      # 状态码判断
-      if response.status_code == 200 && COURSE_ID_RE.match(response.body)
+      # 状态码判断, 以及课程是否存在判断, 避免状态码200但无课程data
+      if response.status_code == 200 && JsonHandler.token_avaliable?(response.body)
         Log.info{"账号: #{name}, token可用"}
       else
-        Log.error{"!! 账号#{name} token失效 !! #{token} 状态码: #{response.status_code}"}
+        Log.error{"!! 账号#{name} token失效 !! #{token} 状态码: #{response.status_code} \n 响应体: \n#{response.body}\n"}
       end
     end
     Log.info{"账号token可用性检查完毕"}
