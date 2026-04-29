@@ -7,8 +7,6 @@ require "./json_handler.cr"
 
 # check循环的间隔
 SLEEP_GAP_IN_LOOP = 2
-# 签到id字段正则
-COURSE_SIGN_IN_ID_RE = /"courseSignInId"\s*:\s*"([0-9a-f]{32})"/
 # 签到码字段正则
 CODE_DISTANCE_RE = /"codeDistance"\s*:\s*"(\d{3,4})"/
 
@@ -50,8 +48,10 @@ class Checker
         # 拿到响应
         response = HTTP::Client.get(id_check_url, check_headers)
 
+        # 检查账号状态是否正常
         if response.status_code == 200 && JsonHandler.token_avaliable?(response.body)
-          if courseSignInId : (String | Nil) = detect_courseSignInId(response) # 尝试抓取签到id
+          # 检查是否有签到
+          if courseSignInId : (String | Nil) = JsonHandler.catch_courseSignInId(response.body) # 尝试抓取签到id
             Log.info{"探测到签到: #{courseSignInId}"}
             # 开始获取签到码
             code_check_url = "https://www.eduplus.net/api/course/clock_in/#{courseSignInId}/student" # codecheck的url
@@ -85,15 +85,6 @@ class Checker
       # 间隔几秒
       sleep SLEEP_GAP_IN_LOOP.seconds
     end
-  end
-
-  # 探测是否有签到，这个方法会很频繁运行, 需要性能
-  private def detect_courseSignInId(response : HTTP::Client::Response) : String?  # 提前指定类型
-    if match = COURSE_SIGN_IN_ID_RE.match(response.body)
-      # 匹配到并返回签到id
-      return match[1]
-    end
-    nil # 未匹配到签到id字段，就返回nil
   end
 
   # 检测签到码的方法
