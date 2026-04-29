@@ -1,4 +1,5 @@
 require "json"
+require "log"
 
 class JsonHandler
 
@@ -89,6 +90,21 @@ class JsonHandler
         return public_key.as_s
       else
         # 如果匹配不到，就返回nil, 即会报错 匹配不到公钥
+        return nil
+      end
+    else
+      return nil
+    end
+  end
+
+  # 抓取token
+  def self.catch_token(body : String) : (String | Nil)
+    json = JSON.parse(body)
+
+    if data = json["data"]?
+      if token = data["accessToken"]?
+        return token.as_s
+      else
         return nil
       end
     else
