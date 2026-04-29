@@ -12,4 +12,17 @@ class JsonHandler
 
     return true
   end
+
+  def self.catch_courseSignInId(body : String) : (String | Nil)
+    json = JSON.parse(body)
+    course_data = json["data"].as_a
+
+    course_data.each do |course|
+      if sign_in_id = course["courseSignInId"]?
+        return sign_in_id.as_s
+      end
+    end
+
+    return nil
+  end
 end
