@@ -36,4 +36,19 @@ class JsonHandler
     # 全空返回nil, 即没有签到
     return nil
   end
+
+  # 抓取签到码
+  def self.catch_codeDistance(body : String) : String
+    json = JSON.parse(body)
+
+    # 保险一点，防止这个data也没了
+    if data = json["data"]?
+      if codeDistance = data["codeDistance"]?
+        return codeDistance.as_s
+      end
+    end
+
+    Log.warn{"未匹配到签到码字段，未知错误，将默认以普通签到进行"}
+    return "200"
+  end
 end
