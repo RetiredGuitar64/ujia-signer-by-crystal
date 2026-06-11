@@ -10,22 +10,27 @@
 - Web实时查看学习状态
 - 账号自动认证
 
+## Dependencies
+> 目前仅支持Linux部署，其他平台请自行使用crystal语言环境编译
+1. 确保环境中Nodejs可用
+   ```bash
+   node --version
+   ```
+2. 确保 本机/服务器 的端口`18888`打开  
+
+> 仅当你想要自己编译安装，才需要满足第三条 **Crystal 语言环境**
+> 如果只是下载release并使用，不需要满足第三条
+3. 确保 **Crystal** 语言环境正常，**shards** 包管理正常
+
 ## Installation
 目前支持两种安装方式：
 
 1. **下载最新 Release**  
-   直接前往 [Releases 页面](https://github.com/RetiredGuitar64/ujia-signer-by-crystal/releases) 下载最新版本。下载完成后，请跳转至 [Install #3：获取账号 token](#install-3-token)。
+   直接前往 [Releases 页面](https://github.com/RetiredGuitar64/ujia-signer-by-crystal/releases) 下载最新版本。下载完成后，将可执行文件传输到你的服务器，并跳转至 [Install #3：获取账号 token](#install-3-token)。
 
 2. **编译安装**  
    如需自行编译安装，请继续按照下面的步骤操作。
-#### Dependencies
-> 目前仅支持Linux部署，其他平台请自行使用crystal语言环境编译
-1. 确保Nodejs可用
-   ```bash
-   node --version
-   ```
-2. 确保 **Crystal** 语言环境正常，**shards** 包管理正常
-3. 确保 本机/服务器 的端口`18888`打开
+
 #### Install
 1. 克隆仓库
    ```bash
@@ -57,7 +62,7 @@
 
    > 文件名不能错
 
-   并写入账号配置，账号为一行一个，格式如下
+   并写入账号配置，账号为**一行一个**，格式如下
    ```txt
    账号名称 | 刚刚获取到的token
    ```
